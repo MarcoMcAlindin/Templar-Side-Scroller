@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Platform
+  - LevelEdgeCollider
+  - Pickup
+  - Bullet
+  - Death Collider
+  - Game Start Trigger
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Platform
+  - Water
+  - UI
+  - Enemy
+  - Player
+  - Bullet
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background 3
+    uniqueID: 4089960095
+    locked: 0
+  - name: Background 2
+    uniqueID: 704545063
+    locked: 0
+  - name: Clouds 0
+    uniqueID: 3402927773
+    locked: 0
+  - name: Background 1
+    uniqueID: 231324503
+    locked: 0
+  - name: Vegetation -1
+    uniqueID: 3982041155
+    locked: 0
+  - name: Vegetation 0
+    uniqueID: 3571953739
+    locked: 0
+  - name: Pick Up
+    uniqueID: 3620746871
+    locked: 0
+  - name: Player
+    uniqueID: 1492112545
+    locked: 0
+  - name: Platforms
+    uniqueID: 3960410661
+    locked: 0
+  - name: Enemy Boss
+    uniqueID: 1272876739
+    locked: 0
+  - name: Clouds 1
+    uniqueID: 1735408239
+    locked: 0
+  - name: Vegetation 1
+    uniqueID: 2813044749
+    locked: 0
+  - name: Enemy AI
+    uniqueID: 2497177227
+    locked: 0
+  - name: VFX
+    uniqueID: 434083151
+    locked: 0
+  - name: UI
+    uniqueID: 3275248943
+    locked: 0

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Blue Bat Enemy Override Animator
+  m_Controller: {fileID: 9100000, guid: 2d6cdad88af728d4797ceb0753da5098, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: f344f181ee721c5429d3b5d6ceca470c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 76fe8b5716bf4fe48a0c9cf407c271d4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 26d192f24381cd240a73d58d1aa7c480, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 17c8a73d4311b1b4685a92926ed43331, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 29499d992c5534546a526594ca32d49d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: aebf74dd3df58514897751ed28663fa4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b3557feb90571b145a8a629acae43d98, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 76fe8b5716bf4fe48a0c9cf407c271d4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 2996bd2dfb7e82d4f931e627a1980bea, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 17c8a73d4311b1b4685a92926ed43331, type: 2}

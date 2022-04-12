@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Red Bat Enemy AI Override Animator
+  m_Controller: {fileID: 9100000, guid: 2d6cdad88af728d4797ceb0753da5098, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 29499d992c5534546a526594ca32d49d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: bab56e252f255774ea7504aef0f7a15d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 26d192f24381cd240a73d58d1aa7c480, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 5defb09835805ae448495993852e840f, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b3557feb90571b145a8a629acae43d98, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a3a21ad193892f842b66dc0b73ebfb73, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f344f181ee721c5429d3b5d6ceca470c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7eee646ccc07c0344a63db1286edf6c5, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 2996bd2dfb7e82d4f931e627a1980bea, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 5defb09835805ae448495993852e840f, type: 2}
