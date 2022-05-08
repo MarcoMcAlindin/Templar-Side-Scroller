@@ -3,53 +3,59 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using System.Runtime.InteropServices;
 
-public enum GameState { MAIN_MENU, MAIN_LEVEL }
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] public GameState _currentGameState = GameState.MAIN_MENU;
 
+    //Player Script
+    public static GameCharacterController2D _playerScript;
+
+    //Game state booleans
     [SerializeField] public bool _gameOver = false;
     [SerializeField] public bool _isGamePaused = false;
-    [SerializeField] public bool _isSoundOn = false;
     [SerializeField] public bool _isGameStarted = false;
 
+    //Sound state bool
+    [SerializeField] public bool _isSoundOn = false;
+
+    //Player score vars
     [SerializeField] public static int _playerScore = 0;
     [SerializeField] public static int _prevScore = 0;
     [SerializeField] public static bool _scoreUpdated = true;
 
-    [SerializeField] GameObject _gameUI;
+    //Event handler
+    public delegate void GameEvent();
 
+    //Pause Events
+    public static event GameEvent OnPause;
+    public static event GameEvent OnUnpause;
 
-    public delegate void GameActions();
-    public static event GameActions OnPause;
-    public static event GameActions OnUnpause;
-    public static event GameActions SoundOn;
-    public static event GameActions SoundOff;
-    public static event GameActions GameStart;
+    //Sound Events
+    public static event GameEvent OnSoundOn;
+    public static event GameEvent OnSoundOff;
+
+    //Game Start Event
+    public static event GameEvent OnGameStart;
+    public static event GameEvent OnGameRestart;
+
+    Vector2 _initialPlayerPosition;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        _playerScript = GameObject.FindWithTag("Player").GetComponent<GameCharacterController2D>();
+
+        _initialPlayerPosition = _playerScript.transform.position;
+    }
 
     public void Update()
     {
         if (_isGameStarted)
         {
-            GameStart?.Invoke();
-
-            _currentGameState = GameState.MAIN_LEVEL;
-
-            _isGameStarted = false;
+            OnGameStart?.Invoke();
         }
 
-
-        if (Input.deviceOrientation == DeviceOrientation.Portrait)
-        {
-            UIManager.Instance.LandscapeText(false);
-            Screen.fullScreen = true;
-        }
-        else if (Input.deviceOrientation == DeviceOrientation.LandscapeRight || Input.deviceOrientation == DeviceOrientation.LandscapeLeft)
-        {
-            UIManager.Instance.LandscapeText(false);
-            Screen.fullScreen = true;
-        }
 
         if (_prevScore <= _playerScore)
         {
@@ -62,9 +68,6 @@ public class GameManager : Singleton<GameManager>
             UIManager.Instance.UpdateScoreUI(_playerScore);
             _scoreUpdated = true;
         }
-        
-
-        Debug.Log(_playerScore);
     }
 
     public IEnumerator EndGame(float delayTime)
@@ -107,13 +110,13 @@ public class GameManager : Singleton<GameManager>
     public void GameSoundToggle()
     {
         if (_isSoundOn)
-        {         
-            SoundOff?.Invoke();
+        {
+            OnSoundOff?.Invoke();
             _isSoundOn = false;
         }
         else
         {
-            SoundOn?.Invoke();
+            OnSoundOn?.Invoke();
             _isSoundOn = true;
         }
     }
@@ -129,4 +132,9 @@ public class GameManager : Singleton<GameManager>
         return false;
     }
 
+
+    public void RestartGame()
+    {
+        OnGameRestart?.Invoke();
+    }
 }

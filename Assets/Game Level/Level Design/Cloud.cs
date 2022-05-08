@@ -12,41 +12,24 @@ public class Cloud : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        _playerTransform = GameManager._playerScript.transform;
+
         _cloudSpeed = 2.0f;
     }
 
-    private void OnEnable()
+    void FixedUpdate()
     {
-        if (GameManager.Instance._currentGameState == GameState.MAIN_LEVEL)
+        if (_playerTransform != null)
         {
-            _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        }
-    }
-
-
-    // Update is called once per frame
-    void LateUpdate()
-    {
-
-
-        if(GameManager.Instance._currentGameState == GameState.MAIN_LEVEL)
-        {
-            if (_playerTransform != null)
+            //Reposition clouds when they go out fo the camera for reuse
+            if (transform.position.x < _playerTransform.position.x - 65.0f)
             {
-
-                if (transform.position.x < _playerTransform.position.x - 65.0f)
-                {
-                    transform.position = new Vector3(_playerTransform.position.x + 55.0f, Random.Range(transform.position.y - 2.5f, transform.position.y + 3.0f), 0.0f);
-                }
-
+                transform.position = new Vector3(_playerTransform.position.x + 60.0f, Random.Range(transform.position.y - 0.5f, transform.position.y + 3.0f), 0.0f);
             }
-
-            
         }
-        
 
-        transform.Translate(Vector3.left * _cloudSpeed * Time.fixedDeltaTime);
-
-      
-    }
+        //Move clouds 
+        transform.Translate(Vector3.left * _cloudSpeed * Time.deltaTime);
+    }  
+    
 }

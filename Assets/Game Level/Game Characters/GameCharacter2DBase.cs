@@ -2,9 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(BoxCollider2D)), RequireComponent(typeof(Animator)), RequireComponent(typeof(SpriteRenderer))]
-public abstract class GameCharacter2DBase: MonoBehaviour
+public abstract class GameCharacter2DBase : MonoBehaviour
 {
-   
     //VISIBLE IN EDITOR
     [SerializeField] public string _characterName;
 
@@ -17,6 +16,8 @@ public abstract class GameCharacter2DBase: MonoBehaviour
     [SerializeField] protected Vector2 _currentVelocity;
     [SerializeField] protected Vector2 _direction;
 
+    public void SetDirection(Vector2 dir) { _direction = dir; }
+
     //Attacking
     [Header("Attacking")]
 
@@ -26,19 +27,19 @@ public abstract class GameCharacter2DBase: MonoBehaviour
     [SerializeField] protected LayerMask _enemyLayerMask;
 
     [Header("Health System")]
+    [SerializeField] protected bool _isDead = false;
+    [SerializeField] public bool _isHurt = false;
+
     [SerializeField] protected HealthSystem _healthSystem;
     public HealthSystem GetHealthSystem() { return _healthSystem; }
-     public bool _isHurt = false;
+
     [SerializeField] GameObject _bloodVFX;
 
+    [Header("Layer Masks")]
     [SerializeField] protected LayerMask _platformLayerMask;
-
-    private int _animatorHash;
+    [SerializeField] protected LayerMask _propLayerMask;
 
     //------------------------------------------------
-
-    protected bool _isDead = false;
-    
 
     //Components
     protected Rigidbody2D _rigidbody;
@@ -53,10 +54,9 @@ public abstract class GameCharacter2DBase: MonoBehaviour
     protected static readonly string ANIM_DEAD = "IsDead";
     protected static readonly string ANIM_HURT = "IsHurt";
 
+
     //EVENTS
     public delegate void CharacterEvent();
-    public static event CharacterEvent OnCharacterDead;
-    public static event CharacterEvent OnCharacterAttack;
 
     //ABSTRACT METHODS
     public abstract void FlipSpriteInDirection();
@@ -73,73 +73,83 @@ public abstract class GameCharacter2DBase: MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
+
+        //Ignore object that have been assigned the lyaer of a prop
+        LayerMask _propLayer = LayerMask.NameToLayer("Prop");
+        Physics2D.IgnoreLayerCollision(gameObject.layer, _propLayer);
+
+
     }
 
-    public  virtual void FixedUpdate()
+    public virtual void FixedUpdate()
     {
-        if (!GameManager.Instance._isGamePaused)
+        if (GameManager.Instance._isGamePaused) return;
+
+        //Check if Character has been hurt and execute method
+        if (_isHurt) { Hurt(); }
+
+        //Check if Character is dead and execute method
+        if (_isDead) { StartCoroutine(Die()); }
+
+        //Check if Character is attacking and execute method
+        if (_isAttacking) { Attack(); }
+
+        //Set dead variable to true if no health left
+        if (_healthSystem.HasNoHealthLeft())
         {
-            //Check if Character has been hurt and execute method
-            if (_isHurt) { Hurt(); }
+            _isDead = true;
+            _currentVelocity = Vector2.zero;
+        }
+        else if (_isMoving) //Check if Move needs executed
+        {
+            Move();
+        }
+        else
+        {
+            //Hash animator parameter
+            int animatorHash = Animator.StringToHash(ANIM_MOVING);
 
-            //Check if Character is dead and execute method
-            if (_isDead) { StartCoroutine(Die()); }
+            //Set moving animation param to false
+            _animator.SetBool(animatorHash, false);
 
-            //Check if Character is attacking and execute method
-            if (_isAttacking) { Attack(); }
+            //Remove x axis velocity
+            _currentVelocity.x = 0.0f;
+        }
 
-            //Set dead variable to true if no health left, otherwise check if player is in movement and execute methods accordingly
-            if (_healthSystem.HasNoHealthLeft())
-            {
-                _isDead = true;
-                _currentVelocity = Vector2.zero;
-            }
-            else if (_isMoving)
-            {
-                Move();
-            }
-            else
-            {
-                _animatorHash = Animator.StringToHash(ANIM_MOVING);
+        //Set current velocity calculated in this frame to the rigidbodies velocity
+        _rigidbody.velocity = _currentVelocity;
 
-                _animator.SetBool(_animatorHash, false);
-                _currentVelocity.x = 0.0f;
-            }
-           
-            //Set current velocity calculated in this frame to the rigidbodies velocity
-            _rigidbody.velocity = _currentVelocity;
-        }      
     }
 
     //-------------------
 
     //Move 
-    public  virtual void Move()
+    public virtual void Move()
     {
         //Set animator parameter
         _currentVelocity.x = _direction.x * _movementSpeed;
 
         if (_currentVelocity.x != 0)
         {
-            _animatorHash = Animator.StringToHash(ANIM_MOVING);
-            _animator.SetBool(_animatorHash, true);
+            //Set animator movement param to true
+            int animatorHash = Animator.StringToHash(ANIM_MOVING);
+            _animator.SetBool(animatorHash, true);
 
         }
 
+        //Flip sprite based on direction
         FlipSpriteInDirection();
     }
- 
+
     //Attack Method
     public virtual void Attack()
     {
-        OnCharacterAttack?.Invoke();
-
         //Set animator trigger
-        _animatorHash = Animator.StringToHash(ANIM_ATTACKING);
-        _animator.SetTrigger(_animatorHash);
+        int animatorHash = Animator.StringToHash(ANIM_ATTACKING);
+        _animator.SetTrigger(animatorHash);
 
         //Set attacking variable to true
-        _isAttacking = false;   
+        _isAttacking = false;
     }
 
     //Hurt Method
@@ -151,29 +161,30 @@ public abstract class GameCharacter2DBase: MonoBehaviour
 
         _healthSystem.TakeOneDamage();
 
+        //ADAPT INTO OBJECT POOL
         GameObject _bloodEffect = Instantiate(_bloodVFX, transform.position, Quaternion.identity);
         _bloodEffect.transform.parent = this.gameObject.transform;
 
-        _animatorHash = Animator.StringToHash("Animate");
-
-        _bloodEffect.GetComponent<Animator>().SetTrigger(_animatorHash);
-
         Destroy(_bloodEffect, 0.4f);
 
+
+        int animatorHash = Animator.StringToHash("Animate");
+
+        _bloodEffect.GetComponent<Animator>().SetTrigger(animatorHash);
+
+        //----------
     }
 
     //Die Method
     public virtual IEnumerator Die()
     {
+        int animatorHash = Animator.StringToHash(ANIM_DEAD);
+        _animator.SetTrigger(animatorHash);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
 
-        _animatorHash = Animator.StringToHash(ANIM_DEAD);
-        _animator.SetTrigger(_animatorHash);
+        ObjectPool.Instance.PoolObject(gameObject);
 
-        
-
-        Destroy(this.gameObject, 0.5f);
     }
-   
+
 }

@@ -39,4 +39,9 @@ public class HealthSystem
     {
         TakeDamage(1);
     }
+
+    public void ResetHealthPoints()
+    {
+        _currentHealth = _maxHealth;
+    }
 }

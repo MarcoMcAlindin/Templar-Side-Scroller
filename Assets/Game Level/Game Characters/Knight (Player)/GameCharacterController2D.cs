@@ -4,6 +4,7 @@ using System.Collections;
 
 public class GameCharacterController2D : GameCharacter2DBase
 {
+    //Input Actions Asset
     private TemplarSideScroller _inputActions;
 
     //Jumping 
@@ -26,13 +27,16 @@ public class GameCharacterController2D : GameCharacter2DBase
 
     [SerializeField] public GameObject _touchControlsUI;
 
-    [SerializeField] MobileMovementButton _leftButton;
-    [SerializeField] MobileMovementButton _rightButton;
+    [SerializeField] MobileButton _leftButton;
+    [SerializeField] MobileButton _rightButton;
+    [SerializeField] MobileButton _attackButton;
+    [SerializeField] MobileButton _jumpButton;
 
     public static event CharacterEvent OnCharacterHurt;
+    public static event CharacterEvent OnPlayerDead;
 
-    
 
+    Vector2 _initialPosition;
 
     private void OnEnable()
     {
@@ -41,6 +45,8 @@ public class GameCharacterController2D : GameCharacter2DBase
 
         //Extra lifepoints
         HeartPickup.OnHeartPickUp += _healthSystem.AddOneHealth;
+
+        GameManager.OnGameRestart += ResetToLevelStart;
     }
 
     private void OnDisable()
@@ -50,20 +56,28 @@ public class GameCharacterController2D : GameCharacter2DBase
 
         //Extra lifepoints
         HeartPickup.OnHeartPickUp -= _healthSystem.AddOneHealth;
+
+        GameManager.OnGameRestart -= ResetToLevelStart;
+
     }
 
 
 
     public void Start()
     {
+        _initialPosition = transform.position;
 
         //Construct Input Asset class
         _inputActions = new TemplarSideScroller();
         _inputActions.Enable();
 
+        //Health system initialisation
         _healthSystem = new HealthSystem(3, 2);
+
+        //Health System UI Initialisation, 
         UIManager.Instance.InitialiseLifepointUI();
-        
+
+
 
         if (GameManager.Instance.IsMobilePlatform())
         {
@@ -76,7 +90,6 @@ public class GameCharacterController2D : GameCharacter2DBase
 
         UIManager.Instance.HidePauseMenu();
 
-        UIManager.Instance.LandscapeText(false);
     }
 
     public override void FixedUpdate()
@@ -150,11 +163,9 @@ public class GameCharacterController2D : GameCharacter2DBase
 
         yield return new WaitForSeconds(0.5f);
 
-        _boxCollider.enabled = false;
-
         GameManager.Instance._gameOver = true;
 
-        Destroy(this.gameObject, 0.2f);
+        OnPlayerDead?.Invoke();
     }
 
 
@@ -240,6 +251,9 @@ public class GameCharacterController2D : GameCharacter2DBase
          if (_leftButton._buttonPressed) { _isMoving = true; _direction.x = -1; }
             else if (_rightButton._buttonPressed) { _isMoving = true; _direction.x = 1; }
             else { _isMoving = false; }
+
+        if(_jumpButton._buttonPressed) { SetJumpToTrue(); _jumpButton._buttonPressed = false;}
+        if(_attackButton._buttonPressed){SetAttackToTrue(); _attackButton._buttonPressed = false; }
 #endif
 
 
@@ -297,7 +311,7 @@ public class GameCharacterController2D : GameCharacter2DBase
         {
             _isHurt = true;
 
-            Destroy(collision.gameObject);
+            ObjectPool.Instance.PoolObject(collision.gameObject);
         }
 
         if (collision.gameObject.tag == "Death Collider")
@@ -325,7 +339,13 @@ public class GameCharacterController2D : GameCharacter2DBase
 
     public void SetJumpToTrue()
     {
-        _isJumping = true;
+        //Assign jump start position and jumping variable if grounded
+        if (_isGrounded)
+        {
+            _jumpStartPosition = transform.position.y;
+
+            _isJumping = true;
+        }
     }
 
 
@@ -335,6 +355,18 @@ public class GameCharacterController2D : GameCharacter2DBase
 
         OnCharacterHurt?.Invoke();
 
+    }
+
+    void ResetToLevelStart()
+    {
+
+        _healthSystem = new HealthSystem(2,3);
+
+        _isDead = false;
+
+        transform.position = new Vector2(_initialPosition.x, _initialPosition.y + 0.1f);
+
+        GameManager.Instance._gameOver = false;
     }
 
 }

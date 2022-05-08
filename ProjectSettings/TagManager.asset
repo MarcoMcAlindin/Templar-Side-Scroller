@@ -20,7 +20,7 @@ TagManager:
   - Enemy
   - Player
   - Bullet
-  - 
+  - Prop
   - 
   - 
   - 
@@ -59,11 +59,8 @@ TagManager:
   - name: Background 1
     uniqueID: 231324503
     locked: 0
-  - name: Vegetation -1
-    uniqueID: 3982041155
-    locked: 0
-  - name: Vegetation 0
-    uniqueID: 3571953739
+  - name: Props
+    uniqueID: 2779752291
     locked: 0
   - name: Pick Up
     uniqueID: 3620746871
@@ -79,9 +76,6 @@ TagManager:
     locked: 0
   - name: Clouds 1
     uniqueID: 1735408239
-    locked: 0
-  - name: Vegetation 1
-    uniqueID: 2813044749
     locked: 0
   - name: Enemy AI
     uniqueID: 2497177227

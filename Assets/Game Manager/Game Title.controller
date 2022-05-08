@@ -9,7 +9,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Animate
+    m_ConditionEvent: AnimateUI
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -415762383788253451}
@@ -60,7 +60,7 @@ AnimatorController:
   m_Name: Game Title
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: Animate
+  - m_Name: AnimateUI
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -90,7 +90,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 4710198142820322879}
-    m_Position: {x: 200, y: 0, z: 0}
+    m_Position: {x: 340, y: 50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -415762383788253451}
     m_Position: {x: 340, y: 120, z: 0}

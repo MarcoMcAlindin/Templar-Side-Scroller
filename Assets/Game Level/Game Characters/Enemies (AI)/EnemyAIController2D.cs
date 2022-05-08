@@ -9,9 +9,10 @@ public class EnemyAIController2D : GameCharacter2DBase
 
     [Header("Target", order = 1)]
     [SerializeField] protected bool _chaseTarget = false;
+    public void SetChaseState(bool cs) { _chaseTarget = cs; }
 
     [Header("Attack Values")]
-    [SerializeField] protected float _attackDelay = 0.5f;
+    [SerializeField] protected float _attackDelay = 0.9f;
 
     [SerializeField] private float _lastAttackTime;
     [SerializeField] private float _attackTimer;
@@ -22,7 +23,12 @@ public class EnemyAIController2D : GameCharacter2DBase
 
     [SerializeField] protected int _enemyPointValue;
     float _turnAroundDistance = 6.0f;
+    public void SetTurnDistance(float distance) { _turnAroundDistance = distance; }
     protected bool _hasNoticedEnemy = false;
+
+    [SerializeField] protected int _maxHP;
+
+    public int _gravityScale;
 
     //--------------------------
 
@@ -30,6 +36,17 @@ public class EnemyAIController2D : GameCharacter2DBase
     bool _isFacingTarget = true;
     bool _isHittingWall = false;
 
+    public virtual void OnEnable()
+    {
+        if(_healthSystem != null)
+        {
+            _healthSystem.ResetHealthPoints();
+
+            _isDead = false;
+        }
+
+        _boxCollider.enabled = true;
+    }
 
     public virtual void Start()
     {
@@ -45,6 +62,9 @@ public class EnemyAIController2D : GameCharacter2DBase
 
         //Set Collision between enemies to be ignored
         Physics2D.IgnoreLayerCollision(gameObject.layer, _platformLayerMask);
+
+        _healthSystem = new HealthSystem(_maxHP);
+
     }
 
     public void Update()
@@ -66,10 +86,7 @@ public class EnemyAIController2D : GameCharacter2DBase
                 else
                 {
                     _reactionTimer += Time.deltaTime;
-                }
-               
-
-                
+                }            
             }
             else
             {
@@ -98,7 +115,7 @@ public class EnemyAIController2D : GameCharacter2DBase
     //Checks if enough time has passed and return true if AI Agent can attack again
     bool CanAttack()
     {
-        if (Time.time > _lastAttackTime + _attackDelay && !_isHurt)
+        if (Time.time > _lastAttackTime + _attackDelay && !_isHurt && !_isDead)
         {
             return true;
         }
@@ -183,7 +200,7 @@ public class EnemyAIController2D : GameCharacter2DBase
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "LevelEdgeCollider") { Destroy(this.gameObject); }
+        if (collision.gameObject.tag == "LevelEdgeCollider") { ObjectPool.Instance.PoolObject(gameObject); }
     }
 
     public override IEnumerator Die()
@@ -193,9 +210,12 @@ public class EnemyAIController2D : GameCharacter2DBase
             GameManager._playerScore += _enemyPointValue;
             GameManager._scoreUpdated = false;
         }
-       
 
+        _boxCollider.enabled = false;
+        _rigidbody.gravityScale = 0.0f;
         return base.Die();
+
+        
 
     }
 }

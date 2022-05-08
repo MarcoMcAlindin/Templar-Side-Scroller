@@ -41,6 +41,8 @@ public class ObjectPool : Singleton<ObjectPool>
                 GameObject newObject = Instantiate(obj) as GameObject;
 
                 newObject.name = obj.name;
+
+                PoolObject(newObject);
                
             }
 

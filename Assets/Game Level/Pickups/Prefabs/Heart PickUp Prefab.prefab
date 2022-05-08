@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 8730221495282527415}
   - component: {fileID: -6525742899765491311}
   m_Layer: 0
-  m_Name: Heart PickUp Prefab
+  m_Name: Heart Pickup Prefab
   m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
